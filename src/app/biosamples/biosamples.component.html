@@ -1,0 +1,194 @@
+<br>
+<div class="jumbotron">
+  <h1>
+    <img src="https://www.ebi.ac.uk/biosamples/images/logo_biosamples.png" alt="BioSamples logo"/>
+    <a href="https://www.ebi.ac.uk/biosamples" style="font-size: 40px; color:white" title="to BioSamples homepage">BioSamples</a>
+  </h1>
+  <p style="color:white ; padding-left: 88px">Simple Search Interface</p>
+</div>
+<br>
+
+
+<div style="padding: 0px 0px 0px 30px;">
+
+  <H4 class="specific"><strong>Total entries in BioSamples</strong></H4>
+
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="row" style="padding: 5px 5px 5px 18px;">
+        <button class="btn btn-default specific" data-toggle="tooltip" data-placement="top"
+                title="Click to get the latest Samples count"
+                (click)="getTotalSampleCount()">
+          Get update
+        </button>
+      </div>
+      <div *ngIf="totalSearchDone" style="padding-left:18px;">
+        <br>
+        <div class="row well">
+          <table class="table table-striped table-bordered">
+            <thead class='text_header'>
+            <tr>
+              <th>Last updated Timestamp</th>
+              <th>Total Sample Count</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>{{lastUpdatedTimeStamp}}</td>
+              <td>
+                {{totalEntries}}
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+
+
+  <H4 class="specific"><strong>Search by BioSamples Accession</strong></H4>
+
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="input-group">
+        <input #search class="form-control" type="text" [(ngModel)]="freeText"
+               name="freeText"
+               placeholder="SAMEA786049"
+               (keyup.enter)="onSearch(freeText)"
+               (keydown)="doUpdate()" (keyup)="doUpdate()"
+        >
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-primary" (click)="onSearch(freeText)">
+              Search <i class="fa fa-search"></i>
+            </button>
+      </span>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row" style="padding: 5px 5px 5px 18px;">
+    <span class="textspecific" style="font-size: smaller">Examples: SAMN04965834, SAMEA103995535, SAMEA103995536 </span>
+  </div>
+
+  <br>
+
+  <div *ngIf="accSearchDone" class="row" style="padding: 5px 5px 5px 18px;">
+    <div class="col-md-8 well">
+      <table class="table table-striped table-bordered">
+        <thead class='text_header'>
+        <tr>
+          <th>BioSamples Accession</th>
+          <th>Sample Source Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><a target="_blank" href="{{sampleLink}}">{{sampleAcc}}</a></td>
+          <td>
+            {{sampleName}}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <br>
+
+  <H4 class="specific"><strong>Search by Sample Attribute Filter</strong></H4>
+
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="input-group">
+        <input #search class="form-control" type="text" [(ngModel)]="keyValue"
+               name="keyValue"
+               placeholder="Organism:Homo Sapiens"
+               (keyup.enter)="onSearchByAttribute(keyValue)"
+               (keydown)="doUpdateAttrSearch()" (keyup)="doUpdateAttrSearch()"
+        >
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-primary" (click)="onSearchByAttribute(keyValue)">
+                  Search <i class="fa fa-search"></i>
+                </button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row" style="padding: 5px 5px 5px 18px;">
+  <span class="textspecific"
+        style="font-size:smaller">Examples: Organism:Homo Sapiens, cell type:liver, organism part:brain</span>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-8">
+      <div *ngIf="showTip" class="alert alert-info">
+        <strong>Search Info!</strong> Enter attribute and value separated by ":" without any empty space between the
+        key,
+        value and the separator. Example: Organism:Homo Sapiens.
+        Please note the attribute Key and Value naming is Case sensitive.
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="keyValueSearchDone" class="row" style="padding: 5px 5px 5px 18px;">
+    <span class="badge">{{attrKey}}</span> &nbsp;&nbsp;  <span class="badge">{{attrValue}}</span>
+    &nbsp;&nbsp;  <span class="badge">Total results: {{totalAttributeAccessions}}</span>
+    <br>
+    <br>
+    <div class="col-md-8 well">
+      <nav class="navbar">
+        <!--<input class="form-control" type="text" name="search" [(ngModel)]="filter">-->
+
+        <div class="input-group">
+           <span class="input-group-btn">
+            <button type="button" class="btn btn-primary" (click)="onSearchByAttribute(keyValue)">
+                  Filter <i class="fa fa-filter"></i>
+                </button>
+            </span>
+          <input class="form-control" type="text" name="search" [(ngModel)]="filter">
+       </div>
+
+
+      </nav>
+      <table class="table table-striped table-bordered">
+        <thead class='text_header'>
+        <tr>
+          <th>BioSamples Accession</th>
+          <th>Sample Source Name</th>
+        </tr>
+        </thead>
+          <tbody>
+          <tr *ngFor="let retrievedAccession of retrievedAccessions | filter:filter | paginate: { itemsPerPage: 20, currentPage: currentPage, totalItems: totalAttributeAccessions}; let i = index">
+            <td><a target="_blank" href="{{retrievedAccession.url}}">{{retrievedAccession.accession}}</a></td>
+            <td>
+              {{retrievedAccession.name}}
+            </td>
+          </tr>
+          </tbody>
+        <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
+      </table>
+    </div>
+  </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
